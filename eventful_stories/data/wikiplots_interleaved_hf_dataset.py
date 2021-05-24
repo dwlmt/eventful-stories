@@ -4,7 +4,7 @@ import datasets
 from datasets.info import SupervisedKeysData
 from jsonlines import jsonlines
 
-from story_fragments.data.hf_interleaving_utils import interleave_examples
+from eventful_stories.data.hf_interleaving_utils import interleave_examples
 
 _CITATION = ""
 

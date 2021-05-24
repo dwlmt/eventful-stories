@@ -26,7 +26,7 @@ from random import Random
 import datasets
 from datasets.info import SupervisedKeysData
 
-from story_fragments.data.hf_interleaving_utils import interleave_examples
+from eventful_stories.data.hf_interleaving_utils import interleave_examples
 
 _DESCRIPTION = """\
 Wrapper for multiple interleaving versions of a glob corpus.
