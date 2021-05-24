@@ -6,53 +6,7 @@ from collections import deque
 import more_itertools
 from blingfire import text_to_sentences
 
-'''
-from nltk.corpus import wordnet
-from textattack.augmentation import Augmenter
-from textattack.constraints.pre_transformation import StopwordModification, RepeatModification
-from textattack.transformations import CompositeTransformation, WordSwapRandomCharacterDeletion, WordSwapQWERTY, \
-    WordSwapWordNet, WordSwap, RandomSwap, WordDeletion
-'''
-
-from story_fragments.data.contraction_utils import CONTRACTIONS_LIST
-
-'''
-TRANSFORMATIONS_PER_EXAMPLE = 2
-
-PCT_WORDS_TO_SWAP = 0.15
-
-class WordSwapAntonymWordNet(WordSwap):
-    """Transforms an input by replacing its words with antonyms provided by
-    WordNet."""
-
-    def __init__(self, language="eng"):
-        if language not in wordnet.langs():
-            raise ValueError(f"Language {language} not one of {wordnet.langs()}")
-        self.language = language
-
-    def _get_replacement_words(self, word, random=False):
-        """Returns a list containing all possible words with 1 character
-        replaced by a homoglyph."""
-        antonyms = set()
-        for syn in wordnet.synsets(word, lang=self.language):
-            for syn_word in syn.lemmas():
-                if (
-                    (syn_word.name() != word)
-                    and ("_" not in syn_word.name())
-                    and (textattack.shared.utils.is_one_word(syn_word.name()))
-                ):
-                    # WordNet can suggest phrases that are joined by '_' but we ignore phrases.
-                    if syn_word.antonyms():
-                        antonyms.add(syn_word.antonyms()[0].name())
-        return list(antonyms)
-
-
-constraints = [RepeatModification(), StopwordModification()]
-# Create augmenter with specified parameters
-antonym_augmenter = Augmenter(transformation=WordSwapAntonymWordNet(), constraints=constraints, pct_words_to_swap=PCT_WORDS_TO_SWAP, transformations_per_example=TRANSFORMATIONS_PER_EXAMPLE)
-random_swap_augmenter = Augmenter(transformation=RandomSwap(), pct_words_to_swap=PCT_WORDS_TO_SWAP, transformations_per_example=TRANSFORMATIONS_PER_EXAMPLE)
-deletion_augmenter = Augmenter(transformation=WordDeletion(), pct_words_to_swap=PCT_WORDS_TO_SWAP, transformations_per_example=TRANSFORMATIONS_PER_EXAMPLE)
-'''
+from eventful_stories.data.contraction_utils import CONTRACTIONS_LIST
 
 _RE_COMBINE_WHITESPACE = re.compile(r"\s+")
 
