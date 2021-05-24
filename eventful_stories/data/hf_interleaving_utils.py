@@ -71,7 +71,6 @@ def interleave_examples(reader, batch_size: int = 1, input_size: int = 1,
             else:
                 id = f"{id}"
 
-            # Get neighbouring negative examples. TODO: Make window configurable.
             negative_labels = []
 
             if add_negative_examples:
@@ -106,24 +105,6 @@ def interleave_examples(reader, batch_size: int = 1, input_size: int = 1,
                         shuffled_text = list(copy.deepcopy(label_text))
                         random.shuffle(shuffled_text)
                         negative_labels.append(" ".join(shuffled_text))
-
-                '''
-                elif c < 75:
-
-                    antonym_negs = antonym_augmenter.augment(" ".join(label_text))
-                    negative_labels.extend(antonym_negs)
-
-                elif c < 90:
-
-                    random_swap_negs = random_swap_augmenter.augment(" ".join(label_text))
-                    negative_labels.extend(random_swap_negs)
-                    #print(f"Antonym: {label_text}, --- {antonym_negs}")
-
-                else:
-
-                    deletion_negs = deletion_augmenter.augment(" ".join(label_text))
-                    negative_labels.extend(deletion_negs)
-                '''
 
             example = {
                 "id": f"{id}-{i}",
