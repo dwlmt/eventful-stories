@@ -61,9 +61,9 @@ class WikiPlotsInterleavedHfDatasetConfig(datasets.BuilderConfig):
         super(WikiPlotsInterleavedHfDatasetConfig, self).__init__(**kwargs)
 
 
-class WritingPromptsInterleavedDataset(datasets.GeneratorBasedBuilder):
-    """The WritingPrompts dataset is over 300K short stories collected from the reddit forum /r/WritingPrompts/ .
-        Each story is a creative writing exercise following a prompt.
+class WikiplotsInterleavedDataset(datasets.GeneratorBasedBuilder):
+    """ English language plots taken from the English Wikipedia from films, books, plays and other narrative forms. The dataset
+            has 132,358 plots in total.
     """
 
     BUILDER_CONFIG_CLASS = WikiPlotsInterleavedHfDatasetConfig
