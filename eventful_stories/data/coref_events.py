@@ -62,7 +62,7 @@ def replace_corefs(document, clusters, cluster_offset):
 
         noun_indices = get_span_noun_indices(document, cluster)
 
-        entity_id = f"<ent{cluster_offset}>"
+        entity_id = f"ent{cluster_offset}"
         ner = None
 
         if noun_indices:
