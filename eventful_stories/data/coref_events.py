@@ -270,7 +270,7 @@ class CorefEventExtractor:
 
                             seen_verbs_set.add(verb)
 
-                    i += i
+                    i += 1
 
             # print(f"SRL: {srl_flat}")
 
