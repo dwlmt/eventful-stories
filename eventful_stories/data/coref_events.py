@@ -106,16 +106,15 @@ class CorefEventExtractor:
 
     def __init__(self, spacy_model_name="en_core_web_trf", coref_model_name: str = "coref-spanbert",
                  event_model_name: str = "https://storage.googleapis.com/allennlp-public-models/structured-prediction-srl-bert.2020.12.15.tar.gz",
-                 event_batch_size: int = 50,
-                 num_sentences_batch: int = 50):
+                 event_batch_size: int = 32,
+                 coref_max_tokens: int = 1024):
 
         self.nlp = spacy.load(spacy_model_name)
         self.coref = load_predictor(coref_model_name)
         self.coref._model = self.coref._model.cuda()
         self.event = Predictor.from_path(event_model_name, cuda_device=0)
         self.event_batch_size = event_batch_size
-        # self.coref_max_tokens = coref_max_tokens
-        self.num_sentences_batch = num_sentences_batch
+        self.coref_max_tokens = coref_max_tokens
 
     def __call__(self, text: str, **kwargs):
 
@@ -156,7 +155,24 @@ class CorefEventExtractor:
             coref_dict = {}
             coref_type_dict = {}
             cluster_offset = 0
-            for curr_sentences in list(more_itertools.chunked(all_sentences, self.num_sentences_batch)):
+
+            sentence_batches = []
+            curr_batch = []
+            curr_counter = 0
+            for s in all_sentences:
+                if curr_counter + len(s) < self.coref_max_tokens:
+                    curr_batch.append(s)
+                    curr_counter += len(s)
+                else:
+                    sentence_batches.append(curr_batch)
+                    curr_batch = []
+                    curr_counter = 0
+
+            if len(curr_batch) > 0:
+                sentence_batches.append(curr_batch)
+
+
+            for curr_sentences in sentence_batches:
 
                 tokens = list(more_itertools.flatten(curr_sentences))
                 curr_sentence_lengthes = [len(s) for s in curr_sentences]
