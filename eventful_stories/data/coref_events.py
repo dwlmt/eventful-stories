@@ -278,7 +278,7 @@ class CorefEventExtractor:
                             verb = v["verb"]
                             # print(v)
 
-                            if verb not in seen_verbs_set and verb not in exclude_verbs:
+                            if (verb not in seen_verbs_set and verb not in exclude_verbs) or len(srl_result["verbs"]) == 1:
 
                                 srl_string = f"{make_srl_string(words, v['tags'])}"
 
