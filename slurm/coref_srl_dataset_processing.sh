@@ -48,7 +48,7 @@ export LINE=$(sed "${SLURM_ARRAY_TASK_ID}q;d" ${CLUSTER_HOME}/${BATCH_FILE_PATH}
 export PREDICTION_STORY_FILE="${CLUSTER_HOME}/${BATCH_FILE_PATH}/${LINE}"
 
 export EXP_ROOT="${CLUSTER_HOME}/git/story-fragments"
-export EXP_ID="${EXP_NAME}_${SLURM_JOB_ID}_${CURRENT_TIME}"
+export EXP_ID="${EXP_NAME}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}_${CURRENT_TIME}"
 export SERIAL_DIR="${SCRATCH_HOME}/${EXP_ID}/"
 
 # Ensure the scratch home exists and CD to the experiment root level.
