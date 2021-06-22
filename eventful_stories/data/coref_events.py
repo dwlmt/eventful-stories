@@ -1,16 +1,20 @@
 import more_itertools
 import spacy
+import re
 from allennlp.common.util import lazy_groups_of
 from allennlp.predictors import Predictor
 from allennlp_models.pretrained import load_predictor
 from spacy.tokens import Doc
 from typing import List
 
-MAX_SRL_STRINGS = 5
+from eventful_stories.data.contraction_utils import CONTRACTIONS_LIST
+
+MAX_SRL_STRINGS = 10
 
 exclude_verbs = {"is", "was", "were", "are", "be", "'s", "'re", "'ll","´s", "´re", "´ll", "can", "could", "must", "may", "have to",
                  "has to", "had to", "will", "would", "has", "have", "had", "do", "does", "did"}
 
+_RE_COMBINE_WHITESPACE = re.compile(r"\s+")
 
 # This code is adapted from https://neurosys.com/article/how-to-make-an-effective-coreference-resolution-model/
 
@@ -102,8 +106,8 @@ class CorefEventExtractor:
 
     def __init__(self, spacy_model_name="en_core_web_trf", coref_model_name: str = "coref-spanbert",
                  event_model_name: str = "https://storage.googleapis.com/allennlp-public-models/structured-prediction-srl-bert.2020.12.15.tar.gz",
-                 event_batch_size: int = 64,
-                 num_sentences_batch: int = 64):
+                 event_batch_size: int = 50,
+                 num_sentences_batch: int = 50):
 
         self.nlp = spacy.load(spacy_model_name)
         self.coref = load_predictor(coref_model_name)
@@ -114,6 +118,22 @@ class CorefEventExtractor:
         self.num_sentences_batch = num_sentences_batch
 
     def __call__(self, text: str, **kwargs):
+
+        def cleanup_text(text):
+
+            text = text.replace("\t", " ")
+            text = text.replace("\n", " ")
+
+            if text.startswith('"'):
+                text = text[1:]
+            if text.endswith('"'):
+                text = text[:-1]
+
+            text = _RE_COMBINE_WHITESPACE.sub(" ", text).strip()
+
+            return text
+
+        text = cleanup_text(text)
 
         # print(f"TEXT: {text}")
 
@@ -140,9 +160,9 @@ class CorefEventExtractor:
 
                 tokens = list(more_itertools.flatten(curr_sentences))
                 curr_sentence_lengthes = [len(s) for s in curr_sentences]
-                #print(f"TOKENS: {tokens}")
+                print(f"TOKENS: {tokens}")
                 clusters = self.coref.predict_tokenized(tokens).get("clusters")
-                #print(f"Clusters: {clusters}")
+                print(f"Clusters: {clusters}")
 
                 batch_doc_nlp = self.nlp.pipe([" ".join(tokens)])
                 # batch_doc =  self.nlp(" ".join(tokens))
@@ -242,7 +262,7 @@ class CorefEventExtractor:
 
             i = 0
             for batch in list(more_itertools.chunked(sentences_coref_dict_list, self.event_batch_size)):
-                #print(f"SENTENCE BATCH: {batch}")
+                print(f"SENTENCE BATCH: {batch}")
                 all_srl_results = self.event.predict_batch_json(batch)
                 #print(f"ALL SRL RESULTS: {all_srl_results}")
 
@@ -264,7 +284,7 @@ class CorefEventExtractor:
 
                                 if ("A0" in srl_string or "A1" in srl_string):
                                     srl_flat.append({"seq_num": i, "verb": verb, "text": srl_string})
-                                    #print(f"{srl_flat[-1]}")
+                                    print(f"{srl_flat[-1]}")
 
                                     count += 1
 

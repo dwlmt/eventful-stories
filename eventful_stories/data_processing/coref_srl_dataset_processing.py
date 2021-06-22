@@ -15,6 +15,9 @@ class ProcessSRLDataset(object):
         dataset = load_dataset(script_path, name=dataset_name,
                                split='train', data_files=[data_file])
 
+        for d in dataset:
+            print(f"EXAMPLE: {d}")
+
         dataset.save_to_disk(output_file)
 
 if __name__ == '__main__':

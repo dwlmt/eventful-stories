@@ -154,12 +154,21 @@ class GlobCorpusOpen(datasets.GeneratorBasedBuilder):
         """ Yields an example for each story split by stories.
             The prompt is the title but also prepended to the main input_text.
         """
-        # bbb
+
 
         process = CorefEventExamples()
 
-        glob_target = os.path.join(filepath, self.config.glob_path)
-        book_files = glob.glob(glob_target, recursive=True)
+        print(f"DATA FILES: {self.config.data_files}")
+
+        if self.config.data_files is not None:
+            book_files = self.config.data_files
+
+            if isinstance(book_files, str):
+                book_files = [book_files]
+
+        else:
+            glob_target = os.path.join(filepath, self.config.glob_path)
+            book_files = glob.glob(glob_target, recursive=True)
 
         def _reader(book_files):
             _id = 0
