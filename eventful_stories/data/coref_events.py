@@ -134,17 +134,17 @@ class CorefEventExtractor:
 
         text = cleanup_text(text)
 
-        # print(f"TEXT: {text}")
+        # #print(f"TEXT: {text}")
 
         results_dict = {}
 
         if text is not None and len(text) > 0:
             doc = self.nlp(text)
-            # print(f"DOC {doc}")
+            # #print(f"DOC {doc}")
 
             all_sentences = []
             for sent in doc.sents:
-                # print(token.text)
+                # #print(token.text)
                 sentence = []
                 for token in sent:
                     sentence.append(token.text)
@@ -176,15 +176,15 @@ class CorefEventExtractor:
 
                 tokens = list(more_itertools.flatten(curr_sentences))
                 curr_sentence_lengthes = [len(s) for s in curr_sentences]
-                print(f"TOKENS: {tokens}")
+                #print(f"TOKENS: {tokens}")
                 clusters = self.coref.predict_tokenized(tokens).get("clusters")
-                print(f"Clusters: {clusters}")
+                #print(f"Clusters: {clusters}")
 
                 batch_doc_nlp = self.nlp.pipe([" ".join(tokens)])
                 # batch_doc =  self.nlp(" ".join(tokens))
 
                 for batch_doc in batch_doc_nlp:
-                    #print(f"BATCH DOC: {batch_doc}")
+                    ##print(f"BATCH DOC: {batch_doc}")
 
                     updated_doc_batch, coref_dict_batch, coref_type_dict_batch, off = replace_corefs(
                         batch_doc, clusters, cluster_offset)
@@ -200,18 +200,18 @@ class CorefEventExtractor:
 
                         offset += s_len
 
-                    #print(f"UPDATED BATCH SENTENCES: {updated_batch_sentences}")
+                    ##print(f"UPDATED BATCH SENTENCES: {updated_batch_sentences}")
 
                     #cluster_offset += len(clusters)
                     coref_dict = {**coref_dict, **coref_dict_batch}
                     coref_type_dict = {**coref_type_dict, **coref_type_dict_batch}
 
-                    #print(f"COREF: {coref_dict}")
-                    #print(f"COREF TYPEs: {coref_type_dict}")
+                    ##print(f"COREF: {coref_dict}")
+                    ##print(f"COREF TYPEs: {coref_type_dict}")
 
                     updated_doc_sentences += updated_batch_sentences
-                    # print(f"UPDATED DOC: {updated_doc_tokens}")
-                    # print(f"COREFERENCES: {coref_dict}")
+                    # #print(f"UPDATED DOC: {updated_doc_tokens}")
+                    # #print(f"COREFERENCES: {coref_dict}")
 
             coref_glosses_flat = []
             for k, v in coref_dict.items():
@@ -224,7 +224,7 @@ class CorefEventExtractor:
 
             sentences = []
 
-            # print(f"SPACY UPDATED DOC: {updated_doc}")
+            # #print(f"SPACY UPDATED DOC: {updated_doc}")
             for i, sentence in enumerate(doc.sents):
                 sentences.append(sentence.text)
 
@@ -235,7 +235,7 @@ class CorefEventExtractor:
             sentences_coref = []
 
             for i, sentence in enumerate(updated_doc_sentences):
-                # print(f"SENTENCE: {sentence}")
+                # #print(f"SENTENCE: {sentence}")
                 for k in coref_dict.keys():
                     if k in sentence:
                         coreference_mention_dict[k].append(i)
@@ -278,9 +278,9 @@ class CorefEventExtractor:
 
             i = 0
             for batch in list(more_itertools.chunked(sentences_coref_dict_list, self.event_batch_size)):
-                print(f"SENTENCE BATCH: {batch}")
+                #print(f"SENTENCE BATCH: {batch}")
                 all_srl_results = self.event.predict_batch_json(batch)
-                #print(f"ALL SRL RESULTS: {all_srl_results}")
+                ##print(f"ALL SRL RESULTS: {all_srl_results}")
 
                 for srl_result in all_srl_results:
 
@@ -292,7 +292,7 @@ class CorefEventExtractor:
                         if count < MAX_SRL_STRINGS:
 
                             verb = v["verb"]
-                            # print(v)
+                            # #print(v)
 
                             if (verb not in seen_verbs_set and verb not in exclude_verbs) or len(srl_result["verbs"]) == 1:
 
@@ -300,7 +300,7 @@ class CorefEventExtractor:
 
                                 if ("A0" in srl_string or "A1" in srl_string):
                                     srl_flat.append({"seq_num": i, "verb": verb, "text": srl_string})
-                                    print(f"{srl_flat[-1]}")
+                                    #print(f"{srl_flat[-1]}")
 
                                     count += 1
 
@@ -308,7 +308,7 @@ class CorefEventExtractor:
 
                     i += 1
 
-            # print(f"SRL: {srl_flat}")
+            # #print(f"SRL: {srl_flat}")
 
             results_dict["sentences"] = sentences
             results_dict["sentences_corefs"] = sentences_coref
@@ -317,5 +317,5 @@ class CorefEventExtractor:
             results_dict["coreference_types"] = coref_type_flat
             results_dict["coreference_mentions"] = coreference_mention_flat
 
-        print(f"RESULTS: {results_dict}")
+        #print(f"RESULTS: {results_dict}")
         return results_dict

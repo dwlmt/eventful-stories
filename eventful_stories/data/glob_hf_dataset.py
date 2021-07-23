@@ -37,8 +37,8 @@ _GUTENBERG_CORPUS_GLOB_PATH = "**/*.txt"
 class GlobInterleavedHfDatasetConfig(datasets.BuilderConfig):
 
     def __init__(self,
-                 data_url: str,
-                 glob_path: str,
+                 data_url: str = None,
+                 glob_path: str = None,
                  dummy: bool = False,
                  **kwargs):
         """ Generic config for reading a dataset in a interleaved or round robin fashion.
